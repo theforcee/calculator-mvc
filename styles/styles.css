@@ -1,0 +1,46 @@
+html {
+  font-family: "Roboto", "Arial", sans-serif;
+  height: 100%;
+}
+
+#button-grid,
+#operators {
+  float: left;
+}
+#button-grid {
+  width: 75%;
+  height: 75%;
+  text-align: right;
+}
+#operators {
+  width: 25%;
+  text-align: left;
+}
+
+#calculator {
+  margin: 5% auto;
+  position: relative;
+  max-width: 350px;
+  height: 350px;
+  border-radius: 5px;
+  text-align: center;
+  border: 1px solid black;
+}
+
+#result {
+  width: 87%;
+  text-align: right;
+  padding: 25px 10px;
+  margin: 10px auto;
+  font-size: 30px;
+}
+
+.btn {
+  width: 32%;
+  padding: 10px;
+  font-size: 20px;
+  font-weight: bold;
+}
+.btn.operator {
+  width: 90%;
+}
