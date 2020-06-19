@@ -1,33 +1,12 @@
 
-model = {
-    buttons: [],
-}
-
-view = {
-    render: function () {
-        document.getElementById("result").value = 0;
-
-        buttonsList = controller.getButtons();
-        for (var i = 0; i < buttonsList.length; i++) {
-            if (buttonsList[i].className == "btn operator") {
-                document.getElementById("operators").append(buttonsList[i]);
-            }
-            else {
-                document.getElementById("button-grid").append(buttonsList[i]);
-            }
-        }
-    },
-    renderAnswer: function (string) {
-        document.getElementById("result").value = string;
-    },
-}
-
-controller = {
-    init: function () {
+class Model {
+    constructor() {
+        console.log("constructor Model ");
+        this.buttons = [];
         this.generateButtons();
-        view.render();
-    },
-    createButton: function (text, val, type) {
+    }
+
+    createButton(text, val, type) {
         var button = document.createElement("button");
         button.className = "btn";
         button.textContent = text;
@@ -37,8 +16,8 @@ controller = {
         if (type === "operator") button.className += " operator";
 
         if (type === "others") {
-            idResult = document.getElementById("result");
-            valResult = idResult.value;
+            const idResult = document.getElementById("result");
+            // idResult = this.view.getInput.id;
             switch (text) {
                 case "CE":
                     break;
@@ -59,7 +38,6 @@ controller = {
                             //last character = operator: delete 3 character
                             else if (!Number(character))
                                 idResult.value = valResult.substr(0, valResult.length - 3);
-
                         }
                     }
                     // view.deleteButton();
@@ -91,9 +69,8 @@ controller = {
             }
         } else {
             button.onclick = function () {
-
-                idResult = document.getElementById("result");
-                _value = idResult.value;
+                const idResult = document.getElementById("result");
+                var _value = idResult.value;
                 if (button.className == "btn") { //button is Number
                     console.log("number: " + _value + ", value = " + val);
 
@@ -107,64 +84,118 @@ controller = {
                     }
                 } else { //button is operator
                     if (_value != 0) {
-                        character = _value.substr(_value.length - 1, 1);
+                        var character = _value.substr(_value.length - 1, 1);
                         //last character = number: add operator
                         if (Number(character) || parseInt(character) == 0)
                             idResult.value += val;
                         //last character = operator: delete last 3 character, add new operator
                         else if (!Number(character))
                             idResult.value = _value.substr(0, _value.length - 3) + val;
-
                     }
                 }
             }
         }
         return button;
-    },
+    }
 
-    generateButtons: function () {
-        button = this.createButton("CE", "", "others");
-        model.buttons.push(button);
+    generateButtons() {
+        var button = this.createButton("CE", "", "others");
+        this.buttons.push(button);
+
         button = this.createButton("C", "", "others");
-        model.buttons.push(button);
+        this.buttons.push(button);
         button = this.createButton("DEL", "", "others");
-        model.buttons.push(button);
+        this.buttons.push(button);
 
         //create numbers
         for (var i = 1; i < 10; i++) {
-            model.buttons.push(this.createButton(i, i));
+            this.buttons.push(this.createButton(i, i));
         }
 
         button = this.createButton("+/-", "", "others");
-        model.buttons.push(button);
+        this.buttons.push(button);
         button = this.createButton("0", "0");
-        model.buttons.push(button);
+        this.buttons.push(button);
         button = this.createButton(".", ".", "others");
-        model.buttons.push(button);
+        this.buttons.push(button);
 
         //create operators
         button = this.createButton("/", " / ", "operator");
-        model.buttons.push(button);
+        this.buttons.push(button);
         button = this.createButton("*", " * ", "operator");
-        model.buttons.push(button);
+        this.buttons.push(button);
         button = this.createButton("-", " - ", "operator");
-        model.buttons.push(button);
+        this.buttons.push(button);
         button = this.createButton("+", " + ", "operator");
-        model.buttons.push(button);
+        this.buttons.push(button);
 
         button = this.createButton("=", "=", "operator");
         button.id = "equal";
         button.onclick = function () {
-            controller.equal(document.getElementById("result").value);
+            this.equal(document.getElementById("result").value);
         }
-        model.buttons.push(button);
-    },
+        this.buttons.push(button);
+    }
+}
 
-    getButtons: function () {
-        return model.buttons;
-    },
+class View {
+    constructor() {
+        console.log("constructor View ");
+        this.calc = document.getElementById("root");
+        this.input = document.createElement("input");
+        this.input.id = "result";
+        this.input.readOnly = true;
+        this.input.type = "text";
+        this.input.value = "0";
+        this.buttons = document.createElement("div");
+        this.buttons.id = "button-grid";
+        this.operators = document.createElement("div");
+        this.operators.id = "operators";
+        this.calc.append(this.input, this.buttons, this.operators);
+        this.buttonsList = [];
+    }
+    setData(list) {
+        this.buttonsList = list;
+    }
 
-    equal: function (string) {
+    render() {
+        console.log("View render() + " + this.buttonsList);
+
+        for (var i = 0; i < this.buttonsList.length; i++) {
+            if (this.buttonsList[i].className == "btn operator") {
+                document.getElementById("operators").append(this.buttonsList[i]);
+            }
+            else {
+                document.getElementById("button-grid").append(this.buttonsList[i]);
+            }
+        }
+    }
+
+    renderAnswer(string) {
+        document.getElementById("result").value = string;
+    }
+}
+
+class Controller {
+    constructor(model, view) {
+        console.log("constructor Controller");
+
+        this.model = model;
+        this.view = view;
+
+        this.view.setData(this.model.buttons);
+        this.view.render(); //ok
+
+        this.idResult = this.view.input.id;
+        // this.idResult = view.setInput(10);
+        this.valResult = this.idResult.value;
+    }
+
+    getButtons() {
+        return this.model.buttons;
+    }
+
+    equal(string) {
         let arrayCharacter = string.split(" ");
         let _length = arrayCharacter.length;
 
@@ -186,8 +217,8 @@ controller = {
             }
         }
         result = arrayCharacter[_length - 1];
-        view.renderAnswer(result);
+        this.view.renderAnswer(result);
     }
 }
 
-controller.init();
+const calc1 = new Controller(new Model(), new View());
