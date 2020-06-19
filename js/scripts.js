@@ -3,7 +3,60 @@ class Model {
     constructor() {
         console.log("constructor Model ");
         this.buttons = [];
+    }
+}
+
+class View {
+    constructor() {
+        // static var index = 0;
+        console.log("constructor View ");
+        this.calc = document.getElementById("root");
+        this.input = document.createElement("input");
+        this.input.id = "result";
+        this.input.readOnly = true;
+        this.input.type = "text";
+        this.input.value = "0";
+        this.buttons = document.createElement("div");
+        this.buttons.id = "button-grid";
+        this.operators = document.createElement("div");
+        this.operators.id = "operators";
+        this.calc.append(this.input, this.buttons, this.operators);
+        this.buttonsList = [];
+        // index++;
+    }
+    setData(list) {
+        this.buttonsList = list;
+    }
+
+    render() {
+        console.log("View render()");
+
+        for (var i = 0; i < this.buttonsList.length; i++) {
+            if (this.buttonsList[i].className == "btn operator") {
+                document.getElementById("operators").append(this.buttonsList[i]);
+            }
+            else {
+                document.getElementById("button-grid").append(this.buttonsList[i]);
+            }
+        }
+    }
+
+    renderAnswer(string) {
+        document.getElementById("result").value = string;
+    }
+}
+
+class Controller {
+    constructor(model, view) {
+        console.log("constructor Controller");
+
+        this.model = model;
+        this.view = view;
+
         this.generateButtons();
+        this.view.setData(this.model.buttons);
+        this.view.render(); //ok
+
     }
 
     createButton(text, val, type) {
@@ -28,8 +81,8 @@ class Model {
                     break;
                 case "DEL":
                     button.onclick = function () {
-                        idResult = document.getElementById("result");
-                        valResult = idResult.value;
+                        // idResult = document.getElementById("result");
+                        var valResult = idResult.value;
                         if (valResult != 0) {
                             //last character = number: delete 1 character
                             let character = valResult.substr(valResult.length - 1, 1);
@@ -49,8 +102,8 @@ class Model {
                     break;
                 case ".":
                     button.onclick = function () {
-                        _value = idResult.value;
-                        _length = _value.length;
+                        var _value = idResult.value;
+                        var _length = _value.length;
                         let space = _value.lastIndexOf(" ");
                         //fistNumber isFloat?
                         if (space == -1) {
@@ -72,8 +125,6 @@ class Model {
                 const idResult = document.getElementById("result");
                 var _value = idResult.value;
                 if (button.className == "btn") { //button is Number
-                    console.log("number: " + _value + ", value = " + val);
-
                     if (_value == 0 && val != 0) {
                         idResult.value = val;
                         if (_value === "0.")
@@ -100,104 +151,48 @@ class Model {
 
     generateButtons() {
         var button = this.createButton("CE", "", "others");
-        this.buttons.push(button);
+        this.model.buttons.push(button);
 
         button = this.createButton("C", "", "others");
-        this.buttons.push(button);
+        this.model.buttons.push(button);
         button = this.createButton("DEL", "", "others");
-        this.buttons.push(button);
+        this.model.buttons.push(button);
 
         //create numbers
         for (var i = 1; i < 10; i++) {
-            this.buttons.push(this.createButton(i, i));
+            this.model.buttons.push(this.createButton(i, i));
         }
 
         button = this.createButton("+/-", "", "others");
-        this.buttons.push(button);
+        this.model.buttons.push(button);
         button = this.createButton("0", "0");
-        this.buttons.push(button);
+        this.model.buttons.push(button);
         button = this.createButton(".", ".", "others");
-        this.buttons.push(button);
+        this.model.buttons.push(button);
 
         //create operators
         button = this.createButton("/", " / ", "operator");
-        this.buttons.push(button);
+        this.model.buttons.push(button);
         button = this.createButton("*", " * ", "operator");
-        this.buttons.push(button);
+        this.model.buttons.push(button);
         button = this.createButton("-", " - ", "operator");
-        this.buttons.push(button);
+        this.model.buttons.push(button);
         button = this.createButton("+", " + ", "operator");
-        this.buttons.push(button);
+        this.model.buttons.push(button);
 
         button = this.createButton("=", "=", "operator");
-        button.id = "equal";
+        var func = this.equal.bind(this); //using global variable
         button.onclick = function () {
-            this.equal(document.getElementById("result").value);
+            //this.equal() //this is button, not Controller
+            func();
         }
-        this.buttons.push(button);
-    }
-}
-
-class View {
-    constructor() {
-        console.log("constructor View ");
-        this.calc = document.getElementById("root");
-        this.input = document.createElement("input");
-        this.input.id = "result";
-        this.input.readOnly = true;
-        this.input.type = "text";
-        this.input.value = "0";
-        this.buttons = document.createElement("div");
-        this.buttons.id = "button-grid";
-        this.operators = document.createElement("div");
-        this.operators.id = "operators";
-        this.calc.append(this.input, this.buttons, this.operators);
-        this.buttonsList = [];
-    }
-    setData(list) {
-        this.buttonsList = list;
+        this.model.buttons.push(button);
     }
 
-    render() {
-        console.log("View render() + " + this.buttonsList);
-
-        for (var i = 0; i < this.buttonsList.length; i++) {
-            if (this.buttonsList[i].className == "btn operator") {
-                document.getElementById("operators").append(this.buttonsList[i]);
-            }
-            else {
-                document.getElementById("button-grid").append(this.buttonsList[i]);
-            }
-        }
-    }
-
-    renderAnswer(string) {
-        document.getElementById("result").value = string;
-    }
-}
-
-class Controller {
-    constructor(model, view) {
-        console.log("constructor Controller");
-
-        this.model = model;
-        this.view = view;
-
-        this.view.setData(this.model.buttons);
-        this.view.render(); //ok
-
-        this.idResult = this.view.input.id;
-        // this.idResult = view.setInput(10);
-        this.valResult = this.idResult.value;
-    }
-
-    getButtons() {
-        return this.model.buttons;
-    }
-
-    equal(string) {
-        let arrayCharacter = string.split(" ");
-        let _length = arrayCharacter.length;
+    equal() {
+        var string = document.getElementById("result").value;
+        var arrayCharacter = string.split(" ");
+        var _length = arrayCharacter.length;
 
         for (let i = 1; i < _length; i += 2) {
             switch (arrayCharacter[i]) {
@@ -216,7 +211,7 @@ class Controller {
                 default: break;
             }
         }
-        result = arrayCharacter[_length - 1];
+        var result = arrayCharacter[_length - 1];
         this.view.renderAnswer(result);
     }
 }
