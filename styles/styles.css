@@ -17,7 +17,7 @@ html {
   text-align: left;
 }
 
-#calculator {
+#root {
   margin: 5% auto;
   position: relative;
   max-width: 350px;
