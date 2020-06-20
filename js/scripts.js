@@ -1,62 +1,54 @@
-
+var _index = 0;
 class Model {
     constructor() {
-        console.log("constructor Model ");
         this.buttons = [];
     }
 }
-
 class View {
     constructor() {
-        // static var index = 0;
-        console.log("constructor View ");
         this.calc = document.getElementById("root");
         this.input = document.createElement("input");
-        this.input.id = "result";
+        this.input.className = "result";
         this.input.readOnly = true;
         this.input.type = "text";
         this.input.value = "0";
         this.buttons = document.createElement("div");
-        this.buttons.id = "button-grid";
+        this.buttons.className = "button-grid";
         this.operators = document.createElement("div");
-        this.operators.id = "operators";
+        this.operators.className = "operators";
         this.calc.append(this.input, this.buttons, this.operators);
         this.buttonsList = [];
-        // index++;
-    }
-    setData(list) {
-        this.buttonsList = list;
+        this.indexView = 0;
     }
 
     render() {
-        console.log("View render()");
-
         for (var i = 0; i < this.buttonsList.length; i++) {
             if (this.buttonsList[i].className == "btn operator") {
-                document.getElementById("operators").append(this.buttonsList[i]);
+                document.getElementsByClassName("operators")[this.indexView].appendChild(this.buttonsList[i]);
             }
             else {
-                document.getElementById("button-grid").append(this.buttonsList[i]);
+                document.getElementsByClassName("button-grid")[this.indexView].appendChild(this.buttonsList[i]);
             }
         }
     }
 
     renderAnswer(string) {
-        document.getElementById("result").value = string;
+        document.getElementsByClassName("result")[this.indexView].value = string;
     }
 }
 
 class Controller {
     constructor(model, view) {
-        console.log("constructor Controller");
-
+        this.indexController = _index;
         this.model = model;
         this.view = view;
+        this.view.indexView = _index;
 
         this.generateButtons();
-        this.view.setData(this.model.buttons);
+        this.view.buttonsList = this.model.buttons;
         this.view.render(); //ok
 
+        _index++;
     }
 
     createButton(text, val, type) {
@@ -68,8 +60,9 @@ class Controller {
         //differentiate operator vs number
         if (type === "operator") button.className += " operator";
 
+        var idResult = document.getElementsByClassName("result")[this.indexController];
+
         if (type === "others") {
-            const idResult = document.getElementById("result");
             // idResult = this.view.getInput.id;
             switch (text) {
                 case "CE":
@@ -121,14 +114,17 @@ class Controller {
                 default: break;
             }
         } else {
+            var _indexController = this.indexController; //global variable
             button.onclick = function () {
-                const idResult = document.getElementById("result");
+                idResult = document.getElementsByClassName("result")[_indexController];
+                console.log(_indexController);
+                console.log(document.getElementsByClassName("result")[_indexController]);
                 var _value = idResult.value;
                 if (button.className == "btn") { //button is Number
                     if (_value == 0 && val != 0) {
                         idResult.value = val;
                         if (_value === "0.")
-                            idResult.value = "0." + number;
+                            idResult.value = "0." + val;
                     }
                     else if (_value != 0) {
                         idResult.value += val;
@@ -190,7 +186,7 @@ class Controller {
     }
 
     equal() {
-        var string = document.getElementById("result").value;
+        var string = document.getElementsByClassName("result")[this.indexController].value;
         var arrayCharacter = string.split(" ");
         var _length = arrayCharacter.length;
 
@@ -216,4 +212,7 @@ class Controller {
     }
 }
 
-const calc1 = new Controller(new Model(), new View());
+const calc = new Array();
+for (var i = 0; i < 100; i++) {
+    calc[i] = new Controller(new Model(), new View());
+}
