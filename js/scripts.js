@@ -1,12 +1,14 @@
-var _index = 0;
 class Model {
     constructor() {
         this.buttons = [];
     }
 }
 class View {
-    constructor() {
-        this.calc = document.getElementById("root");
+    constructor(index) {
+        this.indexView = index;
+        this.root = document.getElementById("root");
+        this.calculator = document.createElement("div");
+        this.calculator.className = "calculator";
         this.input = document.createElement("input");
         this.input.className = "result";
         this.input.readOnly = true;
@@ -16,9 +18,15 @@ class View {
         this.buttons.className = "button-grid";
         this.operators = document.createElement("div");
         this.operators.className = "operators";
-        this.calc.append(this.input, this.buttons, this.operators);
+
+        this.root.append(this.calculator);
+        
+        const calc = document.getElementsByClassName("calculator")[this.indexView];
+        calc.appendChild(this.input);
+        calc.appendChild(this.buttons);
+        calc.appendChild(this.operators);
+
         this.buttonsList = [];
-        this.indexView = 0;
     }
 
     render() {
@@ -36,20 +44,15 @@ class View {
         document.getElementsByClassName("result")[this.indexView].value = string;
     }
 }
-
 class Controller {
     constructor(model, view) {
-        this.indexController = _index;
-
         this.model = model;
         this.view = view;
-        this.view.indexView = _index;
+        this.indexController = this.view.indexView;
 
         this.generateButtons();
         this.view.buttonsList = this.model.buttons;
-        this.view.render(); //ok
-
-        _index++;
+        this.view.render();
     }
 
     createButton(text, val, type) {
@@ -64,7 +67,6 @@ class Controller {
         var idResult = document.getElementsByClassName("result")[this.indexController];
 
         if (type === "others") {
-            // idResult = this.view.getInput.id;
             switch (text) {
                 case "CE":
                     break;
@@ -76,8 +78,8 @@ class Controller {
                 case "DEL":
                     button.onclick = function () {
                         var valResult = idResult.value;
-                        if (valResult != 0) {
-                            if (valResult.length == 1) valResult = 0;
+                        if (valResult != "0") {
+                            if (valResult.length == 1) idResult.value = 0;
                             else {
                                 //last character = number: delete 1 character
                                 let character = valResult.substr(valResult.length - 1, 1);
@@ -116,11 +118,9 @@ class Controller {
                 default: break;
             }
         } else {
-            var _indexController = this.indexController;
+            var _index = this.indexController;
             button.onclick = function () {
-                idResult = document.getElementsByClassName("result")[_indexController];
-                console.log(_indexController);
-                console.log(document.getElementsByClassName("result")[_indexController]);
+                idResult = document.getElementsByClassName("result")[_index];
                 var _value = idResult.value;
                 if (button.className == "btn") { //button is Number
                     if (_value == 0 && val != 0) {
@@ -217,5 +217,5 @@ class Controller {
 
 const calc = new Array();
 for (var i = 0; i < 100; i++) {
-    calc[i] = new Controller(new Model(), new View());
+    calc[i] = new Controller(new Model(), new View(i));
 }

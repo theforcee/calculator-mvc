@@ -3,6 +3,20 @@ html {
   height: 100%;
 }
 
+body {
+  margin: 0;
+}
+
+.calculator {
+  float: left;
+  text-align: center;
+  max-width: 350px;
+  height: 350px;
+  border: 1px solid black;
+  border-radius: 5px;
+  margin: 1%;
+}
+
 .button-grid,
 .operators {
   float: left;
@@ -17,17 +31,8 @@ html {
   text-align: left;
 }
 
-#root {
-  margin: 5% auto;
-  position: relative;
-  max-width: 350px;
-  height: 350px;
-  border-radius: 5px;
-  text-align: center;
-}
-
 .result {
-  width: 87%;
+  width: 88%;
   text-align: right;
   padding: 25px 10px;
   margin: 10px auto;
