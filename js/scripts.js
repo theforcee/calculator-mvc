@@ -40,6 +40,7 @@ class View {
 class Controller {
     constructor(model, view) {
         this.indexController = _index;
+
         this.model = model;
         this.view = view;
         this.view.indexView = _index;
@@ -74,19 +75,20 @@ class Controller {
                     break;
                 case "DEL":
                     button.onclick = function () {
-                        // idResult = document.getElementById("result");
                         var valResult = idResult.value;
                         if (valResult != 0) {
-                            //last character = number: delete 1 character
-                            let character = valResult.substr(valResult.length - 1, 1);
-                            if (Number(character) || parseInt(character) == 0 || character == ".")
-                                idResult.value = valResult.substr(0, valResult.length - 1);
-                            //last character = operator: delete 3 character
-                            else if (!Number(character))
-                                idResult.value = valResult.substr(0, valResult.length - 3);
+                            if (valResult.length == 1) valResult = 0;
+                            else {
+                                //last character = number: delete 1 character
+                                let character = valResult.substr(valResult.length - 1, 1);
+                                if (Number(character) || parseInt(character) == 0 || character == ".")
+                                    idResult.value = valResult.substr(0, valResult.length - 1);
+                                //last character = operator: delete 3 character
+                                else if (!Number(character))
+                                    idResult.value = valResult.substr(0, valResult.length - 3);
+                            }
                         }
                     }
-                    // view.deleteButton();
                     break;
                 case "+/-":
                     button.onclick = function () {
@@ -103,8 +105,8 @@ class Controller {
                             if (_value.indexOf(".") == -1)
                                 idResult.value += ".";
                         }
+                        //lastNumber isFloat?
                         else {
-                            //lastNumber isFloat?
                             let lastNumber = _value.slice(space, _length);
                             if (lastNumber.indexOf(".") == -1)
                                 idResult.value += ".";
@@ -114,7 +116,7 @@ class Controller {
                 default: break;
             }
         } else {
-            var _indexController = this.indexController; //global variable
+            var _indexController = this.indexController;
             button.onclick = function () {
                 idResult = document.getElementsByClassName("result")[_indexController];
                 console.log(_indexController);
@@ -207,6 +209,7 @@ class Controller {
                 default: break;
             }
         }
+
         var result = arrayCharacter[_length - 1];
         this.view.renderAnswer(result);
     }
